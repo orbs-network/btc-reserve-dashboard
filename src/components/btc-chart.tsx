@@ -91,7 +91,7 @@ export const BtcPriceChart = () => {
           unit: "month" as const,
         },
         ticks: {
-          display: false,
+          // display: false,
         },
         grid: {
           display: false,
@@ -106,10 +106,10 @@ export const BtcPriceChart = () => {
         },
         type: "linear" as const,
 
-        beginAtZero: true,
+        // beginAtZero: true,
 
         ticks: {
-          display: false,
+            display: false,
           padding: 10,
         },
       },

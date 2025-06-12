@@ -7,6 +7,7 @@ import { LoginLayout } from "./layouts";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { persistQueryClient } from '@tanstack/react-query-persist-client'
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
+import { QUERIES } from "./consts";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,7 +29,7 @@ persistQueryClient({
   maxAge: 1000 * 60 * 5 * 60, // 60 minutes cache duration
   dehydrateOptions: {
     shouldDehydrateQuery: (query) => {
-      return ['btc-price', 'historical-btc-price', 'btc-price-changed'].includes(query.queryKey[0] as string)
+      return [QUERIES.BTC_PRICE, QUERIES.BTC_HISTORY, QUERIES.BTC_PRICE_CHANGED].includes(query.queryKey[0] as QUERIES)
     }
   }
   

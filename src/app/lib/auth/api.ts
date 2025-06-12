@@ -27,5 +27,6 @@ export const fetchGoogleUser = async (token: string): Promise<User> => {
     lastName: data.family_name,
     firstName: data.given_name,
     isAdmin: ORBS_DOMAINS.includes(data.email),
+    id: data.email
   };
 };

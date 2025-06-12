@@ -7,6 +7,7 @@ export type User = {
     lastName: string,
     firstName: string,
     isAdmin: boolean,
+    id: string,
 }
 export type ParsedSheetRecord = {
     email: string,

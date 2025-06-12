@@ -35,7 +35,7 @@ const Header = () => {
             className="w-[200px] h-[30px]"
           >
             <h4 className="text-[30px] font-[600]">
-              {formatNumber(btcPrice)}
+              {formatNumber(btcPrice?.toString())}
               <span className="text-[16px] "> USD</span>
             </h4>
           </LoadingContent>

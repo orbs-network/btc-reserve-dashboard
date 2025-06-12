@@ -4,29 +4,36 @@ import AverageLogo from "@/assets/average.svg";
 import DepositLogo from "@/assets/current-value.svg";
 import BtcLogo from "@/assets/btc.svg";
 import NumberFlow from "@number-flow/react";
-
-import React from "react";
+import { ReceiptText } from "lucide-react";
+import React, { ReactNode } from "react";
 import Image from "next/image";
-import { formatNumber } from "@/app/utils";
+import { abbreviate, formatNumber } from "@/app/utils";
 import { LoadingContent } from "./ui/loading-content";
 import { Skeleton } from "./ui/skeleton";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import moment from "moment";
+import { useCurrentBtcPrice } from "@/app/hooks";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 function Card({
   title,
   icon,
   children,
+  actionButton,
 }: {
   title: string;
   icon: string;
   children?: React.ReactNode;
+  actionButton?: React.ReactNode;
 }) {
   return (
     <div className="p-3 rounded-lg shadow-[0px_1px_3px_0px_#1018281A] bg-[#D7DDFF] card-container w-[200px] text-muted-foreground md:w-full">
-      <div className="flex h-full flex-col items-start bg-[#e3e7ff] rounded-lg p-4 border-white border-solid border-[0.5px]">
+      <div className="flex relative h-full flex-col items-start bg-[#e3e7ff] rounded-lg p-4 border-white border-solid border-[0.5px]">
+        {actionButton && (
+          <div className="absolute top-[5px] right-[5px]">{actionButton}</div>
+        )}
         <Image
           src={icon}
           alt={title}
@@ -53,7 +60,7 @@ const CardValue = ({
 }: {
   value: number;
   isLoading?: boolean;
-  suffix?: string;
+  suffix?: ReactNode;
 }) => {
   return (
     <div className="relative flex flex-row gap-[5px] items-center">
@@ -62,7 +69,7 @@ const CardValue = ({
       )}
       <NumberFlow
         value={value}
-        className={`text-[18px] font-[600] sm:text-[24px] ${
+        className={`text-[18px] font-[600] sm:text-[22px] ${
           isLoading ? "opacity-0" : ""
         }`}
       />
@@ -74,23 +81,43 @@ const CardValue = ({
 };
 
 const AllPurchases = () => {
-  const { data, isLoading } = usePurchases();
+  const { data } = usePurchases();
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button className="w-fit ml-auto">All Purchases</Button>
-      </DialogTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DialogTrigger asChild>
+            <Button
+              className="rounded-full p-0 w-[30px] h-[30px] bg-white"
+            >
+              <ReceiptText size="14px" className="text-muted-foreground" />
+            </Button>
+          </DialogTrigger>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Purchase History</p>
+        </TooltipContent>
+      </Tooltip>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>All Purchases</DialogTitle>
+          <DialogTitle>Purchase History</DialogTitle>
         </DialogHeader>
         <div className="overflow-y-auto max-h-[500px] flex flex-col gap-2">
-          {data?.purchases.map((it) => {
+          {data?.purchases.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((it) => {
             return (
-              <div className="flex flex-row gap-1 text-muted-foreground bg-muted p-2 rounded-lg justify-between text-[14px] font-medium"  key={it.date}>
+              <div
+                className="flex flex-row gap-1 text-muted-foreground bg-muted p-2 rounded-lg justify-between text-[14px] font-medium"
+                key={it.date}
+              >
                 <p>{moment(it.date).format("MMM D, YYYY")}</p>
-                <p>{formatNumber(it.btc.toString())} BTC <span className="text-muted-foreground text-[14px] opacity-70">{`($${formatNumber(it.price.toString(), 2)})`}</span></p>
+                <p>
+                  {formatNumber(it.btc.toString())} BTC{" "}
+                  <span className="text-muted-foreground text-[14px] opacity-70">{`($${formatNumber(
+                    it.price.toString(),
+                    2
+                  )})`}</span>
+                </p>
               </div>
             );
           })}
@@ -102,15 +129,27 @@ const AllPurchases = () => {
 
 export function PurchaseDetails() {
   const { data, isLoading } = usePurchases();
-
+  const { data: btcPrice } = useCurrentBtcPrice();
+  const totalBTC = (data?.totalBTC || 0) * (btcPrice || 0);
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-row gap-4 flex-wrap justify-between items-stretch sm:flex-nowrap mt-[10px]">
-        <Card title="Total Bitcoin Purchased" icon={BtcLogo}>
+        <Card
+          title="Total Bitcoin Purchased"
+          icon={BtcLogo}
+          actionButton={<AllPurchases />}
+        >
           <CardValue
             value={data?.totalBTC || 0}
             isLoading={isLoading}
-            suffix="BTC"
+            suffix={
+              <span>
+                BTC
+                <small className="font-normal text-[12px] ml-[3px] relative top-[-1px]">
+                  (${abbreviate(totalBTC.toString())})
+                </small>
+              </span>
+            }
           />
         </Card>
         <Card title="Average Bitcoin Purchase Price" icon={AverageLogo}>
@@ -127,7 +166,6 @@ export function PurchaseDetails() {
           <CardValue value={0} suffix="USD" />
         </Card>
       </div>
-      <AllPurchases />
     </div>
   );
 }
