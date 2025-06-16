@@ -5,13 +5,12 @@ import OrbsLogo from "@/assets/orbs-logo.svg";
 
 import Image from "next/image";
 import { Spinner } from "@/components/ui/spinner";
-import { useLogin, useUser } from "../lib/auth/hooks";
+import { useUser } from "../hooks";
 
 export function LoginLayout({ children }: { children: React.ReactNode }) {
-  const user = useUser();
-  const {login, loading} = useLogin();
+  const {login, user, isLoading} = useUser();
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Container>
         <Spinner className="w-[100px] h-[100px] border-8" />
@@ -34,7 +33,7 @@ export function LoginLayout({ children }: { children: React.ReactNode }) {
           Welcome back! Please sign in below.
         </h4>
       </div>
-      <Button onClick={login} variant="outline" className="w-full">
+      <Button onClick={() => login()} variant="outline" className="w-full">
         <Image src={GoogleIcon} alt="Google" width={20} height={20} />
         Sign in with Google
       </Button>

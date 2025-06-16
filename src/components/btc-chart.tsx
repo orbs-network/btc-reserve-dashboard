@@ -12,7 +12,7 @@ import {
 import "chartjs-adapter-date-fns";
 import { formatNumber } from "@/app/utils";
 import moment from "moment";
-import { useHistoricalBtcPrice } from "@/app/hooks";
+import { useHistoricalBtcPrice } from "@/app/hooks/use-btc-history-price";
 import { LoadingContent } from "./ui/loading-content";
 ChartJS.register(
   LineElement,

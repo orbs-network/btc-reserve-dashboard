@@ -3,22 +3,19 @@ import OrbsLogo from "@/assets/orbs-logo.svg";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { LogOut, Upload } from "lucide-react";
-import { useLogout, useUser } from "@/app/lib/auth/hooks";
 import { useDropzone } from "react-dropzone";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
-import { useUploadFile } from "@/app/lib/lib";
 import { Spinner } from "./ui/spinner";
+import { useParseExcel, useUser } from "@/app/hooks";
 
 const UploadCSV = () => {
-  const user = useUser();
-  const { mutate: uploadFile, isPending } = useUploadFile();
-//   if (!user?.isAdmin) return null
+  const { user } = useUser();
+  const { mutate: parseExcel, isPending } = useParseExcel();
+  //   if (!user?.isAdmin) return null
 
   const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      uploadFile(acceptedFiles[0]);
-    },
-    [uploadFile]
+    (acceptedFiles: File[]) => parseExcel(acceptedFiles[0]),
+    [parseExcel]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
@@ -31,53 +28,53 @@ const UploadCSV = () => {
           className="text-[16px] font-[500] text-muted-foreground flex items-center gap-2"
         >
           <Upload />
-          <p>Upload</p>
+          <p>Parse CSV</p>
         </Button>
       </DialogTrigger>
-      <DialogContent >
+      <DialogContent>
         <DialogTitle>Upload CSV</DialogTitle>
 
-      <div className="h-[250px]">
-      {isPending ? (
-          <div className="flex justify-center h-full flex-col items-center gap-4">
-            <Spinner className="w-[100px] h-[100px] border-6" />
-            <p className="text-[16px] font-[600] text-muted-foreground">
-              Uploading file...
-            </p>
-          </div>
-        ) : (
-          <div
-            {...getRootProps()}
-            style={{
-              textAlign: "center",
-              backgroundColor: isDragActive ? "#e3e7ff" : "#fbeeff",
-              borderRadius: "10px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            className="h-[100%]"
-          >
-            <input {...getInputProps()} />
-            {isDragActive ? (
-              <p className="text-[16px] font-[500] text-muted-foreground">
-                Drop the file here...
+        <div className="h-[250px]">
+          {isPending ? (
+            <div className="flex justify-center h-full flex-col items-center gap-4">
+              <Spinner className="w-[100px] h-[100px] border-6" />
+              <p className="text-[16px] font-[600] text-muted-foreground">
+                Uploading file...
               </p>
-            ) : (
-              <p className="text-[16px] font-[500] text-muted-foreground">
-                Upload Excel file
-              </p>
-            )}
-          </div>
-        )}
-      </div>
+            </div>
+          ) : (
+            <div
+              {...getRootProps()}
+              style={{
+                textAlign: "center",
+                backgroundColor: isDragActive ? "#e3e7ff" : "#fbeeff",
+                borderRadius: "10px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              className="h-[100%]"
+            >
+              <input {...getInputProps()} />
+              {isDragActive ? (
+                <p className="text-[16px] font-[500] text-muted-foreground">
+                  Drop the file here...
+                </p>
+              ) : (
+                <p className="text-[16px] font-[500] text-muted-foreground">
+                  Upload Excel file
+                </p>
+              )}
+            </div>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );
 };
 
 export function Navbar() {
-  const logout = useLogout();
+  const { logout } = useUser();
   return (
     <div className="h-[64px] flex items-center border-b border-[#EAECF0] justify-center">
       <div className="max-w-[1400px] pl-6 pr-6 flex items-center justify-between w-full">

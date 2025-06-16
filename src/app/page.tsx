@@ -1,12 +1,6 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
-import {
-  useBtcPriceChanged,
-  useCurrentBtcPrice,
-  useHistoricalBtcPrice,
-} from "./hooks";
+import { useCurrentBtcPrice, useBtcPriceChanged, useUser } from "./hooks";
 import { BtcPriceChart } from "@/components/btc-chart";
-import { useUser } from "./lib/auth/hooks";
 import { PurchaseDetails } from "@/components/purchase-details";
 import { formatNumber } from "./utils";
 import moment from "moment";
@@ -16,7 +10,7 @@ import { LoadingContent } from "@/components/ui/loading-content";
 import { Navbar } from "@/components/navbar";
 
 const Header = () => {
-  const user = useUser();
+  const {user} = useUser();
   const { data: btcPrice, isLoading: isBtcPriceLoading } = useCurrentBtcPrice();
   const { data: btcPriceChanged, isLoading: isBtcPriceChangedLoading } =
     useBtcPriceChanged();

@@ -1,4 +1,6 @@
 import { numericFormatter } from "react-number-format";
+import { User } from "./types";
+import { ORBS_DOMAINS } from "./consts";
 
 export const formatNumber = (value?: string, decimalScale = 4) => {
    try {
@@ -26,3 +28,28 @@ export const formatNumber = (value?: string, decimalScale = 4) => {
     return String(num);
   };
   
+  export const parseUser = (data: any): User => {
+    return {
+      authorized: data.hd === "orbs.com",
+      email: data.email,
+      emailVerified: data.email_verified,
+      avatar: data.picture,
+      lastName: data.family_name,
+      firstName: data.given_name,
+      isAdmin: ORBS_DOMAINS.includes(data.email),
+      id: data.email,
+    };
+  };
+
+  
+
+  export function  parseCurrency(input: string): string | null {
+    if (typeof input !== "string") return null;
+  
+    const cleaned = input
+      .replace(/\$/g, "") // remove dollar sign
+      .replace(/,/g, "") // remove commas
+      .trim(); // remove leading/trailing whitespace
+  
+    return cleaned;
+  }

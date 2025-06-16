@@ -14,8 +14,8 @@ import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import moment from "moment";
-import { useCurrentBtcPrice } from "@/app/hooks";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { useCurrentBtcPrice } from "@/app/hooks";
 
 function Card({
   title,
@@ -130,7 +130,7 @@ const AllPurchases = () => {
 export function PurchaseDetails() {
   const { data, isLoading } = usePurchases();
   const { data: btcPrice } = useCurrentBtcPrice();
-  const totalBTC = (data?.totalBTC || 0) * (btcPrice || 0);
+  const totalBTC = Number(data?.totalBTC || '0') * (btcPrice || 0);
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-row gap-4 flex-wrap justify-between items-stretch sm:flex-nowrap mt-[10px]">
@@ -140,7 +140,7 @@ export function PurchaseDetails() {
           actionButton={<AllPurchases />}
         >
           <CardValue
-            value={data?.totalBTC || 0}
+            value={Number(data?.totalBTC || '0')}
             isLoading={isLoading}
             suffix={
               <span>
@@ -154,7 +154,7 @@ export function PurchaseDetails() {
         </Card>
         <Card title="Average Bitcoin Purchase Price" icon={AverageLogo}>
           <CardValue
-            value={data?.avgPurchasePrice || 0}
+            value={Number(data?.avgPurchasePrice || '0')}
             isLoading={isLoading}
             suffix="USD"
           />

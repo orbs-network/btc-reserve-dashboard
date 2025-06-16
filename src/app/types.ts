@@ -13,9 +13,9 @@ export type ParsedSheetRecord = {
     email: string,
     name: string,
     purchases: Purchase[],
-    totalBTC: number,
-    avgPurchasePrice: number,
-    totalSpent: number,
+    totalBTC: string,
+    avgPurchasePrice: string,
+    totalFiatSpent: string,
 };
 
 
