@@ -21,7 +21,7 @@ export type ParsedSheetRecord = {
 
 
 export interface Purchase {
-    date: string;
+    timestamp: number;
     price: number;
     btc: number;
   }

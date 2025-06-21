@@ -5,7 +5,8 @@ import OrbsLogo from "@/assets/orbs-logo.svg";
 
 import Image from "next/image";
 import { Spinner } from "@/components/ui/spinner";
-import { useUser } from "../hooks";
+import { Fade } from "@/components/ui/fade";
+import { useUser } from "../queries";
 
 export function LoginLayout({ children }: { children: React.ReactNode }) {
   const {login, user, isLoading} = useUser();
@@ -43,8 +44,8 @@ export function LoginLayout({ children }: { children: React.ReactNode }) {
 
 const Container = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="flex flex-col items-center justify-center h-screen max-w-[360px] ml-auto mr-auto gap-[20px]">
+    <Fade className="flex flex-col items-center justify-center h-screen max-w-[360px] ml-auto mr-auto gap-[20px]">
       {children}
-    </div>
+    </Fade>
   );
 };

@@ -1,77 +1,9 @@
-import React, { useCallback } from "react";
+import React from "react";
 import OrbsLogo from "@/assets/orbs-logo.svg";
 import Image from "next/image";
 import { Button } from "./ui/button";
-import { LogOut, Upload } from "lucide-react";
-import { useDropzone } from "react-dropzone";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
-import { Spinner } from "./ui/spinner";
-import { useParseExcel, useUser } from "@/app/hooks";
-
-const UploadCSV = () => {
-  const { user } = useUser();
-  const { mutate: parseExcel, isPending } = useParseExcel();
-  //   if (!user?.isAdmin) return null
-
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => parseExcel(acceptedFiles[0]),
-    [parseExcel]
-  );
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          className="text-[16px] font-[500] text-muted-foreground flex items-center gap-2"
-        >
-          <Upload />
-          <p>Parse CSV</p>
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogTitle>Upload CSV</DialogTitle>
-
-        <div className="h-[250px]">
-          {isPending ? (
-            <div className="flex justify-center h-full flex-col items-center gap-4">
-              <Spinner className="w-[100px] h-[100px] border-6" />
-              <p className="text-[16px] font-[600] text-muted-foreground">
-                Uploading file...
-              </p>
-            </div>
-          ) : (
-            <div
-              {...getRootProps()}
-              style={{
-                textAlign: "center",
-                backgroundColor: isDragActive ? "#e3e7ff" : "#fbeeff",
-                borderRadius: "10px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-              className="h-[100%]"
-            >
-              <input {...getInputProps()} />
-              {isDragActive ? (
-                <p className="text-[16px] font-[500] text-muted-foreground">
-                  Drop the file here...
-                </p>
-              ) : (
-                <p className="text-[16px] font-[500] text-muted-foreground">
-                  Upload Excel file
-                </p>
-              )}
-            </div>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-};
+import { LogOut } from "lucide-react";
+import { useUser } from "@/app/queries";
 
 export function Navbar() {
   const { logout } = useUser();
@@ -80,7 +12,6 @@ export function Navbar() {
       <div className="max-w-[1400px] pl-6 pr-6 flex items-center justify-between w-full">
         <Image src={OrbsLogo} alt="Orbs Logo" height={20} />
         <div className="flex items-center gap-2">
-          <UploadCSV />
           <Button
             onClick={logout}
             variant="ghost"

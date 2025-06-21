@@ -1,4 +1,4 @@
-import { usePurchases } from "@/app/hooks/usePurchases";
+
 import WithdrawLogo from "@/assets/withdraw.svg";
 import AverageLogo from "@/assets/average.svg";
 import DepositLogo from "@/assets/current-value.svg";
@@ -15,7 +15,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import moment from "moment";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
-import { useCurrentBtcPrice } from "@/app/hooks";
+import { useCurrentBtcPrice, usePurchases } from "@/app/queries";
+
 
 function Card({
   title,
@@ -104,13 +105,13 @@ const AllPurchases = () => {
           <DialogTitle>Purchase History</DialogTitle>
         </DialogHeader>
         <div className="overflow-y-auto max-h-[500px] flex flex-col gap-2">
-          {data?.purchases.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((it) => {
+          {data?.purchases.sort((a, b) => b.timestamp - a.timestamp).map((it) => {
             return (
               <div
                 className="flex flex-row gap-1 text-muted-foreground bg-muted p-2 rounded-lg justify-between text-[14px] font-medium"
-                key={it.date}
+                key={it.timestamp}
               >
-                <p>{moment(it.date).format("MMM D, YYYY")}</p>
+                <p>{moment(it.timestamp).format("MMM D, YYYY")}</p>
                 <p>
                   {formatNumber(it.btc.toString())} BTC{" "}
                   <span className="text-muted-foreground text-[14px] opacity-70">{`($${formatNumber(

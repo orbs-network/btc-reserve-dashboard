@@ -12,8 +12,8 @@ import {
 import "chartjs-adapter-date-fns";
 import { formatNumber } from "@/app/utils";
 import moment from "moment";
-import { useHistoricalBtcPrice } from "@/app/hooks/use-btc-history-price";
 import { LoadingContent } from "./ui/loading-content";
+import { useHistoricalBtcPrice } from "@/app/queries";
 ChartJS.register(
   LineElement,
   PointElement,
@@ -86,32 +86,27 @@ export const BtcPriceChart = () => {
     },
     scales: {
       x: {
-        type: "time" as const,
+        type: 'time' as const,
         time: {
           unit: "month" as const,
         },
         ticks: {
-          // display: false,
+          autoSkip: true,
+          maxTicksLimit: 12,
         },
         grid: {
           display: false,
         },
       },
       y: {
+        type: 'linear' as const,
         grid: {
-          display: true, // ✅ show horizontal lines
-          color: "rgba(0, 0, 0, 0.05)", // soft light gray lines
-          lineWidth: 1,
-          drawTicks: false,
+          drawBorder: false,
+          display: true
         },
-        type: "linear" as const,
-
-        // beginAtZero: true,
-
         ticks: {
-            display: false,
-          padding: 10,
-        },
+          callback: (value: number) => value.toLocaleString()
+        }
       },
     },
   };
@@ -124,7 +119,7 @@ export const BtcPriceChart = () => {
             height: "100%",
           }}
           data={chartData}
-          options={options}
+          options={options as any}
         />
       </LoadingContent>
     </div>

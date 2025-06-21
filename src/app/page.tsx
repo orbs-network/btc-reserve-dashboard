@@ -1,5 +1,5 @@
 "use client";
-import { useCurrentBtcPrice, useBtcPriceChanged, useUser } from "./hooks";
+import { useCurrentBtcPrice, useBtcPriceChanged, useUser } from "./queries";
 import { BtcPriceChart } from "@/components/btc-chart";
 import { PurchaseDetails } from "@/components/purchase-details";
 import { formatNumber } from "./utils";
@@ -8,6 +8,7 @@ import { ArrowUpIcon, ArrowDownIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingContent } from "@/components/ui/loading-content";
 import { Navbar } from "@/components/navbar";
+import { Fade } from "@/components/ui/fade";
 
 const Header = () => {
   const {user} = useUser();
@@ -67,13 +68,13 @@ const Header = () => {
 
 export default function Home() {
   return (
-    <div className="flex flex-col gap-[20px] pb-[100px]">
+    <Fade className="flex flex-col gap-[20px] pb-[100px]">
       <Navbar />
       <div className="flex flex-col gap-4 max-w-[1400px] w-full mx-auto pl-6 pr-6">
         <Header />
         <BtcPriceChart />
         <PurchaseDetails />
       </div>
-    </div>
+    </Fade>
   );
 }
