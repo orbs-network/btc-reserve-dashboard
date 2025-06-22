@@ -30,7 +30,7 @@ function Card({
   actionButton?: React.ReactNode;
 }) {
   return (
-    <div className="p-3 rounded-lg shadow-[0px_1px_3px_0px_#1018281A] bg-[#D7DDFF] card-container w-[200px] text-muted-foreground md:w-full">
+    <div className="p-3 rounded-lg shadow-[0px_1px_3px_0px_#1018281A] bg-[#D7DDFF] card-container w-full text-muted-foreground md:w-full">
       <div className="flex relative h-full flex-col items-start bg-[#e3e7ff] rounded-lg p-4 border-white border-solid border-[0.5px]">
         {actionButton && (
           <div className="absolute top-[5px] right-[5px]">{actionButton}</div>

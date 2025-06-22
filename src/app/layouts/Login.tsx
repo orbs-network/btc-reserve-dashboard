@@ -44,7 +44,7 @@ export function LoginLayout({ children }: { children: React.ReactNode }) {
 
 const Container = ({ children }: { children: React.ReactNode }) => {
   return (
-    <Fade className="flex flex-col items-center justify-center h-screen max-w-[360px] ml-auto mr-auto gap-[20px]">
+    <Fade className="flex flex-col items-center justify-center h-screen max-w-[360px] ml-auto mr-auto gap-[20px] pl-6 pr-6">
       {children}
     </Fade>
   );

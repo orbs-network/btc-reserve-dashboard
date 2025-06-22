@@ -70,7 +70,7 @@ export default function Home() {
   return (
     <Fade className="flex flex-col gap-[20px] pb-[100px]">
       <Navbar />
-      <div className="flex flex-col gap-4 max-w-[1400px] w-full mx-auto pl-6 pr-6">
+      <div className="flex flex-col gap-4 max-w-[1400px] w-full mx-auto pl-4 pr-4">
         <Header />
         <BtcPriceChart />
         <PurchaseDetails />

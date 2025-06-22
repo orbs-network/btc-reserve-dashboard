@@ -14,6 +14,7 @@ import { formatNumber } from "@/app/utils";
 import moment from "moment";
 import { LoadingContent } from "./ui/loading-content";
 import { useHistoricalBtcPrice } from "@/app/queries";
+import { useIsMobile } from "@/hooks";
 ChartJS.register(
   LineElement,
   PointElement,
@@ -50,6 +51,7 @@ export const BtcPriceChart = () => {
       },
     ],
   };
+const isMobile = useIsMobile();
 
   const options = {
     responsive: true,
@@ -73,6 +75,7 @@ export const BtcPriceChart = () => {
         displayColors: false,
         callbacks: {
           label: (ctx: any) => {
+           
             const value = formatNumber(ctx.parsed.y.toString(), 2);
             const time = moment(ctx.parsed.x).format("MMM DD");
             return `${value} ${time}`;
@@ -93,6 +96,7 @@ export const BtcPriceChart = () => {
         ticks: {
           autoSkip: true,
           maxTicksLimit: 12,
+          display: isMobile ? false : true,
         },
         grid: {
           display: false,
@@ -105,6 +109,7 @@ export const BtcPriceChart = () => {
           display: true
         },
         ticks: {
+          display: isMobile ? false : true,
           callback: (value: number) => value.toLocaleString()
         }
       },
@@ -112,7 +117,7 @@ export const BtcPriceChart = () => {
   };
 
   return (
-    <div className="h-[216px] mt-[20px]">
+    <div className={`h-[216px] mt-[20px]`}>
       <LoadingContent isLoading={isLoading} className="h-[100%]">
         <Line
           style={{
