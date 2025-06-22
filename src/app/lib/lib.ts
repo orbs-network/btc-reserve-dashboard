@@ -4,10 +4,14 @@ import { ParsedSheetRecord, User } from "../types";
 import { protectedApi } from "./api";
 import moment from "moment";
 
-const normalizeDate = (input: string): string => {
-  const parts = input.split("/");
+const cleanAndNormalizeDate = (input: string): string => {
+  // Extract valid date-like pattern from the input
+  const match = input.match(/\d{1,2}\/\d{1,2}\/\d{2,4}/);
+  if (!match) return input;
 
-  if (parts.length !== 3) return input; // fallback for invalid dates
+  const parts = match[0].split("/");
+
+  if (parts.length !== 3) return input;
 
   const [day, month, year] = parts;
 
@@ -39,7 +43,7 @@ export const getUsersPurchases = async (
   })[0] as any;
 
   const purchases = Object.entries(data as any)
-    .filter(([key]) => dateRegex.test(normalizeDate(key)))
+    .filter(([key]) => dateRegex.test(cleanAndNormalizeDate(key)))
     .map(([key, value]) => ({
       timestamp: moment(key, "DD/MM/YYYY").valueOf(),
       btc: value as number,
