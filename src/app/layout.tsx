@@ -12,6 +12,13 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "BTC dashboard",
   description: "BTC compensation dashboard",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180" },
+    ],
+  }
 };
 
 export default function RootLayout({
