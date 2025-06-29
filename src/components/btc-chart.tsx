@@ -11,7 +11,7 @@ import {
 } from "chart.js";
 import "chartjs-adapter-date-fns";
 import { formatNumber } from "@/app/utils";
-import moment from "moment";
+import moment, { min } from "moment";
 import { LoadingContent } from "./ui/loading-content";
 import { useHistoricalBtcPrice } from "@/app/queries";
 import { useIsMobile } from "@/hooks";
@@ -27,7 +27,8 @@ ChartJS.register(
 
 export const BtcPriceChart = () => {
   const { data, isLoading } = useHistoricalBtcPrice();
-
+  console.log({data});
+  
   const prices = data?.map(([timestamp, price]) => ({
     x: timestamp,
     y: price,
@@ -75,7 +76,6 @@ const isMobile = useIsMobile();
         displayColors: false,
         callbacks: {
           label: (ctx: any) => {
-           
             const value = formatNumber(ctx.parsed.y.toString(), 2);
             const time = moment(ctx.parsed.x).format("MMM DD");
             return `${value} ${time}`;
@@ -93,6 +93,7 @@ const isMobile = useIsMobile();
         time: {
           unit: "month" as const,
         },
+        min: '2025-01-01',
         ticks: {
           autoSkip: true,
           maxTicksLimit: 12,
