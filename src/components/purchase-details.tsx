@@ -1,14 +1,12 @@
-
 import WithdrawLogo from "@/assets/withdraw.svg";
 import AverageLogo from "@/assets/average.svg";
 import DepositLogo from "@/assets/current-value.svg";
 import BtcLogo from "@/assets/btc.svg";
 import NumberFlow from "@number-flow/react";
-import { ReceiptText } from "lucide-react";
+import { ReceiptText, CircleQuestionMark } from "lucide-react";
 import React, { ReactNode } from "react";
 import Image from "next/image";
 import { abbreviate, formatNumber } from "@/app/utils";
-import { LoadingContent } from "./ui/loading-content";
 import { Skeleton } from "./ui/skeleton";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
@@ -16,18 +14,18 @@ import { DialogTrigger } from "@radix-ui/react-dialog";
 import moment from "moment";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { useCurrentBtcPrice, usePurchases } from "@/app/queries";
-
-
 function Card({
   title,
   icon,
   children,
   actionButton,
+  tooltipContent,
 }: {
   title: string;
   icon: string;
   children?: React.ReactNode;
   actionButton?: React.ReactNode;
+  tooltipContent?: React.ReactNode;
 }) {
   return (
     <div className="p-3 rounded-lg shadow-[0px_1px_3px_0px_#1018281A] bg-[#D7DDFF] card-container w-full text-muted-foreground md:w-full">
@@ -44,7 +42,10 @@ function Card({
         />
 
         <div className="flex flex-col items-start mt-auto">
-          <h3 className="text-[14px] ">{title}</h3>
+          <div className="flex flex-row gap-1 items-center">
+            <h3 className="text-[14px] ">{title}</h3>
+            {tooltipContent && <CardTooltip>{tooltipContent}</CardTooltip>}
+          </div>
           <div className="text-[16px] font-[600] flex flex-row gap-[5px] items-center">
             {children}
           </div>
@@ -89,9 +90,7 @@ const AllPurchases = () => {
       <Tooltip>
         <TooltipTrigger asChild>
           <DialogTrigger asChild>
-            <Button
-              className="rounded-full p-0 w-[30px] h-[30px] bg-white"
-            >
+            <Button className="rounded-full p-0 w-[30px] h-[30px] bg-white">
               <ReceiptText size="14px" className="text-muted-foreground" />
             </Button>
           </DialogTrigger>
@@ -105,33 +104,36 @@ const AllPurchases = () => {
           <DialogTitle>Purchase History</DialogTitle>
         </DialogHeader>
         <div className="overflow-y-auto max-h-[500px] flex flex-col gap-2">
-          {data?.purchases.sort((a, b) => b.timestamp - a.timestamp).map((it) => {
-            return (
-              <div
-                className="flex flex-row gap-1 text-muted-foreground bg-muted p-2 rounded-lg justify-between text-[14px] font-medium"
-                key={it.timestamp}
-              >
-                <p>{moment(it.timestamp).format("MMM D, YYYY")}</p>
-                <p>
-                  {formatNumber(it.btc.toString())} BTC{" "}
-                  <span className="text-muted-foreground text-[14px] opacity-70">{`($${formatNumber(
-                    it.price.toString(),
-                    2
-                  )})`}</span>
-                </p>
-              </div>
-            );
-          })}
+          {data?.purchases
+            .sort((a, b) => b.timestamp - a.timestamp)
+            .map((it) => {
+              return (
+                <div
+                  className="flex flex-row gap-1 text-muted-foreground bg-muted p-2 rounded-lg justify-between text-[14px] font-medium"
+                  key={it.timestamp}
+                >
+                  <p>{moment(it.timestamp).format("MMM D, YYYY")}</p>
+                  <p>
+                    {formatNumber(it.btc.toString())} BTC{" "}
+                    <span className="text-muted-foreground text-[14px] opacity-70">{`($${formatNumber(
+                      it.price.toString(),
+                      2
+                    )})`}</span>
+                  </p>
+                </div>
+              );
+            })}
         </div>
       </DialogContent>
     </Dialog>
   );
 };
 
+
 export function PurchaseDetails() {
   const { data, isLoading } = usePurchases();
   const { data: btcPrice } = useCurrentBtcPrice();
-  const totalBTC = Number(data?.totalBTC || '0') * (btcPrice || 0);
+  const totalBTC = Number(data?.totalBTC || "0") * (btcPrice || 0);
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-row gap-4 flex-wrap justify-between items-stretch sm:flex-nowrap mt-[10px]">
@@ -141,7 +143,7 @@ export function PurchaseDetails() {
           actionButton={<AllPurchases />}
         >
           <CardValue
-            value={Number(data?.totalBTC || '0')}
+            value={Number(data?.totalBTC || "0")}
             isLoading={isLoading}
             suffix={
               <span>
@@ -155,12 +157,16 @@ export function PurchaseDetails() {
         </Card>
         <Card title="Average Bitcoin Purchase Price" icon={AverageLogo}>
           <CardValue
-            value={Number(data?.avgPurchasePrice || '0')}
+            value={Number(data?.avgPurchasePrice || "0")}
             isLoading={isLoading}
             suffix="USD"
           />
         </Card>
-        <Card title="Available to Withdraw" icon={WithdrawLogo}>
+        <Card
+          title="Available to Withdraw"
+          icon={WithdrawLogo}
+          tooltipContent={<WithdrawTooltipContent />}
+        >
           <CardValue value={0} suffix="BTC" />
         </Card>
         <Card title="Current Value Available" icon={DepositLogo}>
@@ -170,3 +176,37 @@ export function PurchaseDetails() {
     </div>
   );
 }
+
+
+const CardTooltip = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <CircleQuestionMark size="16px" className="text-muted-foreground" />
+      </TooltipTrigger>
+      <TooltipContent className="max-w-[300px]">{children}</TooltipContent>
+    </Tooltip>
+  );
+};
+
+
+const WithdrawTooltipContent = () => {
+  return (
+    <div>
+      <p>
+        Starting two years after the Retention Bonus grant date, you may choose
+        to receive a reduced pro rata cash bonus. This is calculated by taking
+        the original BTC amount, adjusting it based on the proportion of days
+        passed out of 1,095 (three years), and then receiving 50% of that
+        adjusted gross amount in cash.
+      </p>
+      <br />
+      <p>
+        After three years, the bonus fully vests, you may request, at any time,
+        to receive 100% of the BTC Base Amount as a gross cash bonus in their
+        salary currency, based on the BTC exchange rate on the request date.
+        Payment will follow the Company’s regular payroll practices.{" "}
+      </p>
+    </div>
+  );
+};
