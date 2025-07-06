@@ -9,9 +9,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingContent } from "@/components/ui/loading-content";
 import { Navbar } from "@/components/navbar";
 import { Fade } from "@/components/ui/fade";
+import { LoginLayout } from "./layouts";
 
 const Header = () => {
-  const {user} = useUser();
+  const { user } = useUser();
   const { data: btcPrice, isLoading: isBtcPriceLoading } = useCurrentBtcPrice();
   const { data: btcPriceChanged, isLoading: isBtcPriceChangedLoading } =
     useBtcPriceChanged();
@@ -68,13 +69,15 @@ const Header = () => {
 
 export default function Home() {
   return (
-    <Fade className="flex flex-col gap-[20px] pb-[100px]">
-      <Navbar />
-      <div className="flex flex-col gap-4 max-w-[1400px] w-full mx-auto pl-4 pr-4">
-        <Header />
-        <BtcPriceChart />
-        <PurchaseDetails />
-      </div>
-    </Fade>
+    <LoginLayout>
+      <Fade className="flex flex-col gap-[20px] pb-[100px]">
+        <Navbar />
+        <div className="flex flex-col gap-4 max-w-[1400px] w-full mx-auto pl-4 pr-4">
+          <Header />
+          <BtcPriceChart />
+          <PurchaseDetails />
+        </div>
+      </Fade>
+    </LoginLayout>
   );
 }

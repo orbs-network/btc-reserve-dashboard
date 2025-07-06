@@ -27,7 +27,6 @@ ChartJS.register(
 
 export const BtcPriceChart = () => {
   const { data, isLoading } = useHistoricalBtcPrice();
-  console.log({data});
   
   const prices = data?.map(([timestamp, price]) => ({
     x: timestamp,

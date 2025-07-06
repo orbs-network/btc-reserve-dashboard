@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { GOOGLE_TOKEN_KEY, QUERIES } from "./consts";
+import { GOOGLE_TOKEN_KEY, PRODUCTION_URL, QUERIES } from "./consts";
 import moment from "moment";
 import { fetchGoogleUser, protectedApi } from "./lib/api";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useCallback } from "react";
 import { ParsedSheetRecord } from "./types";
 import { getUsersPurchases } from "./lib/lib";
+import { useIsMobile } from "@/hooks";
 
 export function useCurrentBtcPrice() {
   return useQuery({
@@ -74,56 +75,69 @@ export const useBtcPriceChanged = () => {
   });
 };
 
+export const useUserQuery = () => {
+  return useQuery({
+    queryKey: ["user"],
+    queryFn: async () => {
+      try {
+        const user = await fetchGoogleUser();
+        return user;
+      } catch (error) {
+        console.log("error", error);
+        return null;
+      }
+    },
+    staleTime: Infinity,
+  });
+};
 
+const scope = [
+  "https://www.googleapis.com/auth/drive.readonly",
+  "openid",
+  "email",
+  "profile",
+].join(" ");
 
 export const useUser = () => {
-    const {
-      data: user,
-      refetch,
-      isLoading,
-    } = useQuery({
-      queryKey: ["user"],
-      queryFn: async () => {
-       try {
-          const user = await fetchGoogleUser();
-          return user;
-       } catch (error) {
-          console.log("error", error);
-          return null;
-       }
-      },
-      staleTime: Infinity,
-    });
-  
-    const login = useGoogleLogin({
-      scope: [
-          'https://www.googleapis.com/auth/drive.readonly',
-          'openid',
-          'email',
-          'profile',
-        ].join(' '),
-      prompt: "select_account",
-      onSuccess: async ({ access_token }) => {
-        localStorage.setItem(GOOGLE_TOKEN_KEY, access_token);
-        return refetch();
-      },
-    });
-  
-    const logout = useCallback(() => {
-      localStorage.removeItem(GOOGLE_TOKEN_KEY);
+  const { data: user, isLoading, refetch } = useUserQuery();
+  const isMobile = useIsMobile();
+  const loginDesktop = useGoogleLogin({
+    scope,
+    prompt: "select_account",
+    onSuccess: async ({ access_token }) => {
+      localStorage.setItem(GOOGLE_TOKEN_KEY, access_token);
       refetch();
-    }, [refetch]);
-  
-    return { login, logout, user, isLoading };
-  };
-  
+    },
+  });
 
-  export function usePurchases() {
-    const { user } = useUser();
-    return useQuery<ParsedSheetRecord>({
-      queryKey: ["purchases", user?.email],
-      queryFn: async () => getUsersPurchases(user!),
-      enabled: !!user,
+  const loginMobile = useCallback(() => {
+    if (typeof window === "undefined") return;
+    const tokenClient = (window as any).google.accounts.oauth2.initCodeClient({
+      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+      scope,
+      ux_mode: "redirect",
+      redirect_uri: `${PRODUCTION_URL}/auth/callback`, // Must be whitelisted in Google Console
+      prompt: "select_account",
+      callback: () => {}, // won't be called in redirect mode
     });
-  }
-  
+
+    // Trigger login manually
+    tokenClient.requestCode();
+  }, []);
+
+  const logout = useCallback(() => {
+    localStorage.removeItem(GOOGLE_TOKEN_KEY);
+    refetch();
+  }, [refetch]);
+  const login = isMobile ? loginMobile : loginDesktop;
+  return { login, logout, user, isLoading, refetchUser: refetch };
+};
+
+export function usePurchases() {
+  const { user } = useUser();
+  return useQuery<ParsedSheetRecord>({
+    queryKey: ["purchases", user?.email],
+    queryFn: async () => getUsersPurchases(user!),
+    enabled: !!user,
+  });
+}

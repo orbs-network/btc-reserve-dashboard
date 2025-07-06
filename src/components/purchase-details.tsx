@@ -12,8 +12,8 @@ import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import moment from "moment";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { useCurrentBtcPrice, usePurchases } from "@/app/queries";
+import { ResponsiveTooltip } from "./ui/tooltip";
 function Card({
   title,
   icon,
@@ -38,7 +38,7 @@ function Card({
           alt={title}
           width={20}
           height={20}
-          className="mb-[12px]"
+          className="mb-[10px]"
         />
 
         <div className="flex flex-col items-start mt-auto">
@@ -59,25 +59,30 @@ const CardValue = ({
   value,
   isLoading,
   suffix,
+  children,
 }: {
   value: number;
   isLoading?: boolean;
   suffix?: ReactNode;
+  children?: ReactNode;
 }) => {
   return (
-    <div className="relative flex flex-row gap-[5px] items-center">
-      {isLoading && (
-        <Skeleton className="w-[60px] h-[20px] absolute top-[10px] left-0" />
-      )}
-      <NumberFlow
-        value={value}
-        className={`text-[18px] font-[600] sm:text-[22px] ${
-          isLoading ? "opacity-0" : ""
-        }`}
-      />
-      {suffix && !isLoading && (
-        <p className="text-[16px] relative top-[2px]">{suffix}</p>
-      )}
+    <div className="flex flex-col gap-1">
+      <div className="relative flex flex-row gap-[5px] items-center">
+        {isLoading && (
+          <Skeleton className="w-[60px] h-[20px] absolute top-[10px] left-0" />
+        )}
+        <NumberFlow
+          value={value}
+          className={`text-[18px] font-[600] sm:text-[22px] ${
+            isLoading ? "opacity-0" : ""
+          }`}
+        />
+        {suffix && !isLoading && (
+          <p className="text-[16px] relative top-[2px]">{suffix}</p>
+        )}
+      </div>
+      {children}
     </div>
   );
 };
@@ -87,18 +92,13 @@ const AllPurchases = () => {
 
   return (
     <Dialog>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <DialogTrigger asChild>
-            <Button className="rounded-full p-0 w-[30px] h-[30px] bg-white">
-              <ReceiptText size="14px" className="text-muted-foreground" />
-            </Button>
-          </DialogTrigger>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Purchase History</p>
-        </TooltipContent>
-      </Tooltip>
+      <ResponsiveTooltip content={<p>Purchase History</p>}>
+        <DialogTrigger asChild>
+          <Button className="rounded-full p-0 w-[30px] h-[30px] bg-white">
+            <ReceiptText size="14px" className="text-muted-foreground" />
+          </Button>
+        </DialogTrigger>
+      </ResponsiveTooltip>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Purchase History</DialogTitle>
@@ -129,11 +129,10 @@ const AllPurchases = () => {
   );
 };
 
-
 export function PurchaseDetails() {
   const { data, isLoading } = usePurchases();
   const { data: btcPrice } = useCurrentBtcPrice();
-  const totalBTC = Number(data?.totalBTC || "0") * (btcPrice || 0);
+  const usdPrice = Number(data?.totalBTC || "0") * (btcPrice || 0);
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-row gap-4 flex-wrap justify-between items-stretch sm:flex-nowrap mt-[10px]">
@@ -145,15 +144,15 @@ export function PurchaseDetails() {
           <CardValue
             value={Number(data?.totalBTC || "0")}
             isLoading={isLoading}
-            suffix={
-              <span>
-                BTC
-                <small className="font-normal text-[12px] ml-[3px] relative top-[-1px]">
-                  (${abbreviate(totalBTC.toString())})
-                </small>
-              </span>
-            }
-          />
+            suffix={<span>BTC</span>}
+          >
+            <p className="text-[13px] relative">
+              Updated USD Value{" "}
+              <small className="font-normal text-[13px] ml-[3px] relative top-[-1px]">
+                (${abbreviate(usdPrice.toString())})
+              </small>
+            </p>
+          </CardValue>
         </Card>
         <Card title="Average Bitcoin Purchase Price" icon={AverageLogo}>
           <CardValue
@@ -177,18 +176,13 @@ export function PurchaseDetails() {
   );
 }
 
-
 const CardTooltip = ({ children }: { children: React.ReactNode }) => {
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <CircleQuestionMark size="16px" className="text-muted-foreground" />
-      </TooltipTrigger>
-      <TooltipContent className="max-w-[300px]">{children}</TooltipContent>
-    </Tooltip>
+    <ResponsiveTooltip content={children}>
+      <CircleQuestionMark size="16px" className="text-muted-foreground" />
+    </ResponsiveTooltip>
   );
 };
-
 
 const WithdrawTooltipContent = () => {
   return (

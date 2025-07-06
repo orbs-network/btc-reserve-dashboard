@@ -22,11 +22,12 @@ const cleanAndNormalizeDate = (input: string): string => {
   return `${paddedDay}/${paddedMonth}/${paddedYear}`;
 };
 const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{2}$/;
-
+// const suffix = process.env.NODE_ENV === "development" ? "-dev" : "";
+const suffix = ""
 export const getUsersPurchases = async (
   user: User
 ): Promise<ParsedSheetRecord> => {
-  const name = `${user?.email.replace("@orbs.com", "")}-btc-compensation.csv`;
+  const name = `${user?.email.replace("@orbs.com", "")}-btc-compensation${suffix}.csv`;
   const url = `https://www.googleapis.com/drive/v3/files?q=name='${name}'&fields=files(id,name)`;
 
   const id = await protectedApi.get(url).then((res) => res.data.files[0].id);
@@ -41,6 +42,8 @@ export const getUsersPurchases = async (
   const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {
     raw: true,
   })[0] as any;
+
+  
 
   const purchases = Object.entries(data as any)
     .filter(([key]) => dateRegex.test(cleanAndNormalizeDate(key)))

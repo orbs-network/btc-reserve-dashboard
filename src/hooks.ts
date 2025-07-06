@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export function useIsMobile(breakpoint = 768) {
     const [isMobile, setIsMobile] = useState(false);
@@ -15,3 +15,4 @@ export function useIsMobile(breakpoint = 768) {
   
     return isMobile;
   }
+

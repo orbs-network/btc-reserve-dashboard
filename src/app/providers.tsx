@@ -42,7 +42,7 @@ export function Providers({ children }: { children: ReactNode }) {
       <GoogleOAuthProvider
         clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}
       >
-        <LoginLayout>{children}</LoginLayout>
+        {children}
       </GoogleOAuthProvider>
     </QueryClientProvider>
   );

@@ -9,3 +9,6 @@ BTC_PRICE_CHANGED= 'btc-price-changed',
 
 
 }
+
+
+export const PRODUCTION_URL = "https://bitcoin-compensation.vercel.app"

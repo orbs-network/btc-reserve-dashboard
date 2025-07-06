@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import GoogleIcon from "@/assets/google.svg";
 import OrbsLogo from "@/assets/orbs-logo.svg";
@@ -8,8 +8,9 @@ import { Spinner } from "@/components/ui/spinner";
 import { Fade } from "@/components/ui/fade";
 import { useUser } from "../queries";
 
+
 export function LoginLayout({ children }: { children: React.ReactNode }) {
-  const {login, user, isLoading} = useUser();
+  const { user, isLoading, login, refetchUser } = useUser();
 
   if (isLoading) {
     return (
